@@ -13,7 +13,7 @@
         <div class="">
           <div class="page-title">
               <div class="title_left">
-                  <h3>Teachers Subjects</h3>
+                  <h3>Students Exams</h3>
               </div>
           </div>
           <div class="clearfix"></div>
@@ -22,7 +22,7 @@
             <div class="col-md-12 col-sm-12 ">
               <div class="x_panel">
                 <div class="x_title">
-                  <h2>All Teachers Subjects</h2>
+                  <h2>All Students Exams</h2>
                   <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
@@ -34,7 +34,7 @@
                   <table id="datatable-buttons" class="table table-striped table-bordered" style="width:100%">
                     <thead>
                       <tr>
-                        <th>Teacher Name</th>
+                        <th>Student Name</th>
                         <th>Subject</th>
                         <th>Subject Type</th>
                         <th>Exam Type</th>

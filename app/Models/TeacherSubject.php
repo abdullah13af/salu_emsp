@@ -41,7 +41,7 @@ class TeacherSubject extends Model
             $teacher_subjects_id = $teachersubject->id;
             // get all students with the teachersubject department
             $students =  Student::where([['batch_id', '=', $teachersubject->batch_id], 
-                                         ['department_id', '=', $teachersubject->teacher->department->id]])->get();
+                                         ['department_id', '=', $teachersubject->subject->department->id]])->get();
 
             // iterate over all students and create the subjectmark entry
             foreach ($students as $student) {
