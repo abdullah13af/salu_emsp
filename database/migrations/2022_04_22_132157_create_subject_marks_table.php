@@ -17,8 +17,8 @@ class CreateSubjectMarksTable extends Migration
             $table->id()->unique()->autoIncrement();
             $table->unsignedBigInteger('student_id');
             $table->unsignedBigInteger('teacher_subjects_id');
-            $table->foreign('student_id')->references('id')->on('students');
-            $table->foreign('teacher_subjects_id')->references('id')->on('teacher_subjects');
+            $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('teacher_subjects_id')->references('id')->on('teacher_subjects')->onDelete('cascade')->onUpdate('cascade');
             $table->decimal('mid_marks', 5, 2)->nullable();
             $table->decimal('sessional_marks', 5, 2)->nullable();
             $table->decimal('practical_marks', 5, 2)->nullable();

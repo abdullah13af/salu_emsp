@@ -20,7 +20,7 @@ class CreateSubjectsTable extends Migration
             $table->enum('subject_type', array('theory', 'practical'));
             $table->decimal('credit_hours', 2, 1);
             $table->unsignedBigInteger('department_id');
-            $table->foreign('department_id')->references('id')->on('departments');
+            $table->foreign('department_id')->references('id')->on('departments')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }

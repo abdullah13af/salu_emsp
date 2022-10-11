@@ -43,3 +43,12 @@ salu-ems-database
 
 user_id = salu_ems_server_admin
 pass = W02FY05V64ID81D1$
+
+====================== HOSTINGER INFO ======================
+Database
+    Database: u674363904_salu_ems
+    Username: u674363904_abdullah_13af
+    Password: wq$GaT13
+
+
+SSH KEY: ssh -p 65002 u674363904@45.130.228.251

@@ -17,8 +17,8 @@ class CreateTeachersTable extends Migration
             $table->id()->unique()->autoIncrement();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('department_id');
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('department_id')->references('id')->on('departments');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('department_id')->references('id')->on('departments')->onDelete('cascade')->onUpdate('cascade');
             $table->timestamps();
         });
     }

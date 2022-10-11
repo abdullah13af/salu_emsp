@@ -18,9 +18,9 @@ class CreateTeacherSubjectsTable extends Migration
             $table->unsignedBigInteger('subject_id');
             $table->unsignedBigInteger('batch_id');
             $table->unsignedBigInteger('teacher_id');
-            $table->foreign('subject_id')->references('id')->on('subjects');
-            $table->foreign('batch_id')->references('id')->on('batches');
-            $table->foreign('teacher_id')->references('id')->on('teachers');
+            $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('batch_id')->references('id')->on('batches')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('teacher_id')->references('id')->on('teachers')->onDelete('cascade')->onUpdate('cascade');
             $table->string('year');
             $table->enum('semester', array('spring', 'fall'));
             $table->timestamps();

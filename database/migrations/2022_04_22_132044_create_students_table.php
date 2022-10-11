@@ -18,9 +18,9 @@ class CreateStudentsTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('department_id');
             $table->unsignedBigInteger('batch_id');
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->foreign('department_id')->references('id')->on('departments');
-            $table->foreign('batch_id')->references('id')->on('batches');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('department_id')->references('id')->on('departments')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('batch_id')->references('id')->on('batches')->onDelete('cascade')->onUpdate('cascade');
             $table->string('father_name');
             $table->string('surname');
             $table->string('religion');
