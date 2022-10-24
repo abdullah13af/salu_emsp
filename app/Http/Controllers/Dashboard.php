@@ -7,6 +7,7 @@ use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\Batch;
 use App\Models\Subject;
+use App\Models\SubjectMark;
 use App\Models\TeacherSubject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -64,9 +65,11 @@ class Dashboard extends Controller
 
     public function student_dashboard() {
         $page_title = 'Student Dashboard';
+        $student_subjects_count = SubjectMark::where("student_id", "=", Auth::user()->student->id)->count();
 
         $context = [
             'page_title' => $page_title,
+            'student_subjects_count' => $student_subjects_count
         ];
         return view('dashboards/student_dashboard', $context);
     }

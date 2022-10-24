@@ -66,6 +66,10 @@ require __DIR__.'/auth.php';
 // my subject rout show subjects of a specific teacher
 Route::get('teachers/my_subjects', 'App\Http\Controllers\TeacherController@my_subjects');
 
+// my results rout show subjects of a specific teacher
+Route::get('students/my_results', 'App\Http\Controllers\StudentController@my_results');
+Route::get('students/results', 'App\Http\Controllers\StudentController@results');
+
 // resources general routes
 Route::resource('/batches', BatchController::class);
 Route::resource('/departments', DepartmentController::class);

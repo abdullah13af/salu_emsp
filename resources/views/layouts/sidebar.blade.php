@@ -83,6 +83,15 @@
             </li>
           @endif
           {{-- if user is teacher end --}}
+
+          {{-- if user is student start --}}
+          @if (Auth::user()->student)
+            <li>
+              <a href="{{ url('students/my_results') }}"><i class="fa fa-solid fa-file"></i> My Results</a>
+            </li>
+          @endif
+          {{-- if user is student end --}}
+
         </ul>
       </div>
       

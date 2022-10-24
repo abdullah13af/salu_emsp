@@ -6,9 +6,11 @@ use App\Models\Student;
 use Illuminate\Http\Request;
 use App\Models\Department;
 use App\Models\Batch;
+use App\Models\SubjectMark;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class StudentController extends Controller
 {
@@ -27,6 +29,90 @@ class StudentController extends Controller
             'page_title' => $page_title
         ];
         return view('students/index', $context);
+    }
+
+    /**
+     * Display a listing of the resource that matches me.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function my_results()
+    {
+        $page_title = 'My Results';
+
+        $semesters_results = array();
+        $const_theory_total_marks = 100;
+        $const_practical_total_marks = 50;
+        
+        // get all subject_marks
+        $subject_marks = SubjectMark::where("student_id", "=", Auth::user()->student->id)->get();      
+
+
+        // iterate over all subject_marks, and store the results in semester_results array
+        foreach ($subject_marks as $key => $value) {
+            // get the semester
+            $semester = $value->teacher_subjects->subject->semester;
+            // get the subject_type
+            $subject_type = $value->teacher_subjects->subject->subject_type;
+            // check if the semester already exists in semester_results
+            if(array_key_exists($semester, $semesters_results)){
+                // if subject is theory, than add theory marks
+                if($subject_type == "theory"){
+                    $semesters_results[$semester] = array("theory_obtained_marks" => $semesters_results[$semester]["theory_obtained_marks"] + $value->mid_marks + $value->sessional_marks + $value->final_marks,
+                                                          "practical_obtained_marks" => $semesters_results[$semester]["practical_obtained_marks"],
+                                                          "theory_total_marks" => $semesters_results[$semester]["theory_total_marks"] + $const_theory_total_marks,
+                                                          "practical_total_marks" => $semesters_results[$semester]["practical_total_marks"]);
+                }
+                // otherwise, subject is practical so add practical marks
+                else{
+                    $semesters_results[$semester] = array("practical_obtained_marks" => $semesters_results[$semester]["practical_obtained_marks"] + $value->practical_marks,
+                                                          "theory_obtained_marks" => $semesters_results[$semester]["theory_obtained_marks"],
+                                                          "practical_total_marks" => $semesters_results[$semester]["practical_total_marks"] + $const_practical_total_marks,
+                                                          "theory_total_marks" => $semesters_results[$semester]["theory_total_marks"]);
+                }
+            }
+            // otherwise, create a new entry for semester_results
+            else{
+                // if subject is theory, than add theory marks
+                if($subject_type == "theory"){
+                    $semesters_results[$semester] = array("theory_obtained_marks" => $value->mid_marks + $value->sessional_marks + $value->final_marks,
+                                                          "practical_obtained_marks" => 0,
+                                                          "theory_total_marks" => $const_theory_total_marks,
+                                                          "practical_total_marks" => 0);
+                }
+                // otherwise, subject is practical so add practical marks
+                else{
+                    $semesters_results[$semester] = array("practical_obtained_marks" => $value->practical_marks,
+                                                          "theory_obtained_marks" => 0,
+                                                          "theory_total_marks" => 0,
+                                                          "practical_total_marks" => $const_practical_total_marks);
+                }
+            }
+        }
+
+        // array of all 8 semesters
+        $semesters = Array("1", "2", "3", "4", "5", "6", "7", "8");
+        // iterate over all semesters and create empty data with N/A as value if the data for that semester is not exists after above step.
+        foreach ($semesters as $key => $value) {
+            // if this semester is not in the semester_results, than create N/A results for this semester
+            if(!array_key_exists($value, $semesters_results)){
+                $semesters_results[$value] = array("practical_obtained_marks" => "N/A",
+                                                    "theory_obtained_marks" => "N/A",
+                                                    "theory_total_marks" =>  "N/A",
+                                                    "practical_total_marks" => "N/A");
+            }
+        }
+
+        // sort the semster_results by semster[key] in aces order
+        ksort($semesters_results);
+        
+        // dd($semesters_results);
+
+        $context = [
+            'page_title' => $page_title,
+            'semesters_results' => $semesters_results
+        ];
+        return view('students/my_results', $context);
     }
 
     /**
@@ -184,7 +270,7 @@ class StudentController extends Controller
             'nationality' => ['required'],
             'residential_address' => ['required'],
             'gender' => ['required', "in:male,female,other"],
-            'cnic_no' => ['required', 'unique:students,cnic_no'],
+            'cnic_no' => ['required', 'unique:students,cnic_no,'.$student->id],
             'department_id' => ['required', 'exists:departments,id'],
             'batch_id' => ['required', 'exists:batches,id'],
         ];
