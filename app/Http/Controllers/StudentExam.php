@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Rules\IsTeacherSubjectExists;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Database\Eloquent\Builder;
 
 class StudentExam extends Controller
 {
@@ -99,10 +100,28 @@ class StudentExam extends Controller
         if(SubjectMark::where([['student_id', '=', $student->id], ['teacher_subjects_id', '=', $teacher_subject->id]])->exists())
             throw ValidationException::withMessages(['roll_no' => "The Student is already registered in the selected subject's exam."]);        
 
+        $subject_id = $request->input('subject_id');
+        // check if the student has already appear in this subject exam
+        $old_subject_marks = SubjectMark::with('teacher_subjects')
+                    ->where('student_id', '=', $student->id)
+                    ->whereHas('teacher_subjects', function (Builder $query) use ($subject_id) {
+                        return $query->where('subject_id', '=', $subject_id);
+                        })
+                    ->get()->first();
+        
+        // if student already appeared in this subject exam, than mark his old subject as is_overrided = True
+        if($old_subject_marks->count()) {
+            SubjectMark::where('id', '=', $old_subject_marks->id)
+            ->update([
+                'is_overrided' => true
+            ]);
+        }
+        
         // set default types
         $is_fresher = false;
         $is_improver = false;
         $is_failure = false;
+
         // determine the type
         if($request->input('student_exam_type') == 'fresher') {
             $is_fresher = true;

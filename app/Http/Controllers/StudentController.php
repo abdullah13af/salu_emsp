@@ -45,7 +45,7 @@ class StudentController extends Controller
         $const_practical_total_marks = 50;
         
         // get all subject_marks
-        $subject_marks = SubjectMark::where("student_id", "=", Auth::user()->student->id)->get();      
+        $subject_marks = SubjectMark::where([["student_id", "=", Auth::user()->student->id], ["is_overrided", '=', false]])->get();      
 
 
         // iterate over all subject_marks, and store the results in semester_results array

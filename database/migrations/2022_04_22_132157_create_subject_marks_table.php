@@ -27,6 +27,7 @@ class CreateSubjectMarksTable extends Migration
             $table->boolean('is_fresher')->default(0);
             $table->boolean('is_improver')->default(0);
             $table->boolean('is_failure')->default(0);
+            $table->boolean('is_overrided')->default(0);
             $table->timestamps();
         });
     }
