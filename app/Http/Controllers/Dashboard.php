@@ -65,11 +65,17 @@ class Dashboard extends Controller
 
     public function student_dashboard() {
         $page_title = 'Student Dashboard';
-        $student_subjects_count = SubjectMark::where("student_id", "=", Auth::user()->student->id)->count();
+        $student_total_subjects_count = SubjectMark::where([["student_id", "=", Auth::user()->student->id]])->count();
+        $student_fresher_subjects_count = SubjectMark::where([["student_id", "=", Auth::user()->student->id], ["is_fresher", "=", True]])->count();
+        $student_improver_subjects_count = SubjectMark::where([["student_id", "=", Auth::user()->student->id], ["is_improver", "=", True]])->count();
+        $student_failure_subjects_count = SubjectMark::where([["student_id", "=", Auth::user()->student->id], ["is_failure", "=", True]])->count();
 
         $context = [
             'page_title' => $page_title,
-            'student_subjects_count' => $student_subjects_count
+            'student_total_subjects_count' => $student_total_subjects_count,
+            'student_fresher_subjects_count' => $student_fresher_subjects_count,
+            'student_improver_subjects_count' => $student_improver_subjects_count,
+            'student_failure_subjects_count' => $student_failure_subjects_count,
         ];
         return view('dashboards/student_dashboard', $context);
     }

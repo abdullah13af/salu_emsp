@@ -27,10 +27,67 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Route::get('/', function () {
-    if(Auth::check())
+require __DIR__.'/auth.php';
+
+
+// this group contains all the routes for only authenticated users
+Route::group(['middleware' => 'auth' ], function() {
+
+    // dashboards [dashboard will dertermin the type of user i.e. admin, teacher, or studnet]
+    Route::get('/', function () {
         return redirect('/dashboard');
-    return view('auth.login');
+    });
+
+    // get subjects of a specific department
+    Route::get('get_subjects/{id}', function ($id) {
+        $subjects = Subject::where('department_id', '=', $id)->get();
+        return response()->json($subjects);
+    });
+
+    // general resources routes 
+    // [NOTE: General routes must be defined after the extra routes]
+    Route::resource('/dashboard', Dashboard::class);
+});
+
+// this group contains all the routes for only authenticated teacher users
+Route::group(['middleware' => 'auth:teacher' ], function() {
+
+    // my subject route to show subjects of a specific teacher
+    Route::get('teachers/my_subjects', 'App\Http\Controllers\TeacherController@my_subjects');
+    
+    Route::get('subjects_marks/{id}', [
+        'as' => 'subjects_marks.index',
+        'uses' => 'App\Http\Controllers\SubjectMarkController@index'
+    ]);
+
+    // general resources routes 
+    // [NOTE: General routes must be defined after the extra routes]
+    // get all the general resource routes of subjects_marks except the index route, because we already replaced the index route with subjects_marks 
+    Route::resource('/subjects_marks', SubjectMarkController::class, ['except' => 'index']);
+});
+
+
+// this group contains all the routes for only authenticated student users
+Route::group(['middleware' => 'auth:student' ], function() {
+
+    // my_results route to show result of all semester of a specific auth student
+    Route::get('students/my_results', 'App\Http\Controllers\StudentController@my_results');
+    // semester_result route to show result of auth student of a specific semester
+    Route::get('students/semester_result/{id}', 'App\Http\Controllers\StudentController@semester_result');
+});
+
+// this group contains all the routes for only authenticated admin users
+Route::group(['middleware' => 'auth:admin' ], function() {
+
+    // general resources routes 
+    // [NOTE: General routes must be defined after the extra routes]
+    Route::resource('/batches', BatchController::class);
+    Route::resource('/departments', DepartmentController::class);
+    Route::resource('/teachers', TeacherController::class);
+    Route::resource('/students', StudentController::class);
+    Route::resource('/subjects', SubjectController::class);
+    Route::resource('/teachers_subjects', TeacherSubjectController::class);
+    Route::resource('/student_exams', StudentExam::class);
 });
 
 // Route::get('/dashboard', function () {
@@ -55,33 +112,3 @@ Route::get('/', function () {
 // });
 // // teachers depenedent dropdown end
 // subjects depenedent dropdown start
-Route::get('get_subjects/{id}', function ($id) {
-    $subjects = Subject::where('department_id', '=', $id)->get();
-    return response()->json($subjects);
-});
-// subjects depenedent dropdown end
-
-require __DIR__.'/auth.php';
-
-// my subject rout show subjects of a specific teacher
-Route::get('teachers/my_subjects', 'App\Http\Controllers\TeacherController@my_subjects');
-
-// my results rout show subjects of a specific teacher
-Route::get('students/my_results', 'App\Http\Controllers\StudentController@my_results');
-Route::get('students/results', 'App\Http\Controllers\StudentController@results');
-
-// resources general routes
-Route::resource('/batches', BatchController::class);
-Route::resource('/departments', DepartmentController::class);
-Route::resource('/teachers', TeacherController::class);
-Route::resource('/students', StudentController::class);
-Route::resource('/subjects', SubjectController::class);
-Route::resource('/teachers_subjects', TeacherSubjectController::class);
-Route::resource('/student_exams', StudentExam::class);
-Route::resource('/dashboard', Dashboard::class);
-
-Route::get('subjects_marks/{id}', [
-    'as' => 'subjects_marks.index',
-    'uses' => 'App\Http\Controllers\SubjectMarkController@index'
-]);
-Route::resource('/subjects_marks', SubjectMarkController::class, ['except' => 'index']);

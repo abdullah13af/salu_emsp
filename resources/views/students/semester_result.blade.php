@@ -13,7 +13,7 @@
         <div class="">
           <div class="page-title">
               <div class="title_left">
-                  <h3>{{ $page_title }}</h3>
+                  <h3>{{ $page_title }} </h3>
               </div>
           </div>
           <div class="clearfix"></div>
@@ -34,27 +34,32 @@
                   <table id="datatable-buttons" class="table table-striped table-bordered" style="width:100%">
                     <thead>
                       <tr>
-                        <th>Semester</th>
-                        <th>Theory Obtained Marks</th>
-                        <th>Thoery Total Marks</th>
-                        <th>Practical Obtained Marks</th>
-                        <th>Practical Total Marks</th>
-                        <th>Actions</th>
+                        <th>Subject</th>
+                        <th>Subject Type</th>
+                        <th>Mid Term Marks</th>
+                        <th>Sessional Marks</th>
+                        <th>Final Term Marks</th>
+                        <th>Practical Marks</th>
                       </tr>
                     </thead>
                     <tbody>
-                      @foreach ($semesters_results as $key => $semesters_result)
+                      @foreach ($subject_marks as  $subject_mark)
                         <tr>
-                          <td>{{ $key }}</td>
-                          <td>{{ $semesters_result['theory_obtained_marks'] }}</td>
-                          <td>{{ $semesters_result['theory_total_marks'] }}</td>
-                          <td>{{ $semesters_result['practical_obtained_marks'] }}</td>
-                          <td>{{ $semesters_result['practical_total_marks'] }}</td>
-                          <td>
-                            <a href="/students/semester_result/{{ $key }}" class="" data-toggle="tooltip" data-placement="top" title="View Semester Result">
-                              <i class="fa fa-eye" style="font-size: 20px" aria-hidden="true"></i>
-                            </a>   
-                          </td>
+                          <td>{{ $subject_mark->teacher_subjects->subject->name }}</td>
+                          <td>{{ ucfirst(trans($subject_mark->teacher_subjects->subject->subject_type)) }}</td>
+
+                          @if ($subject_mark->teacher_subjects->subject->subject_type == 'theory')
+                            <td>{{ $subject_mark->mid_marks }}</td>
+                            <td>{{ $subject_mark->sessional_marks }}</td>
+                            <td>{{ $subject_mark->final_marks }}</td>
+                            <td>N/A</td>
+                          @else
+                            <td>N/A</td>
+                            <td>N/A</td>
+                            <td>N/A</td>
+                            <td>{{ $subject_mark->practical_marks }}</td>
+                          @endif
+
                         </tr>
                       @endforeach
                     </tbody>

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
 
 class StudentController extends Controller
 {
@@ -114,6 +115,37 @@ class StudentController extends Controller
         ];
         return view('students/my_results', $context);
     }
+
+
+    /**
+     * Display a listing of the resource that matches me.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function semester_result($semester_id)
+    {
+        $page_title = 'Semester - '. $semester_id .' Result';
+
+        // get all subject_marks
+        // $subject_marks = SubjectMark::where([["student_id", "=", Auth::user()->student->id], ["is_overrided", '=', false]])->get();
+
+        $subject_marks = SubjectMark::with('teacher_subjects')
+                    ->where([["student_id", "=", Auth::user()->student->id], ["is_overrided", '=', false]])
+                    ->whereHas('teacher_subjects', function (Builder $query) use ($semester_id) {
+                        return $query->with('subject')
+                                     ->whereHas('subject', function(Builder $query) use ($semester_id) {
+                                        return $query->where('semester', '=', $semester_id);
+                                     });
+                        })
+                    ->get();
+        
+        $context = [
+            'page_title' => $page_title,
+            'subject_marks' => $subject_marks
+        ];
+        return view('students/semester_result', $context);
+    }
+
 
     /**
      * Show the form for creating a new resource.
